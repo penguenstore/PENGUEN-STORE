@@ -282,6 +282,11 @@ if (result.meta.changes !== 1) {
             env.TELEGRAM_TOKEN, chatId,
             `✅ تم التحقق من الدفع بنجاح!\n\n🐧 المنتج: ${order.product_name}\n💰 المبلغ: ${order.amount} USDT\n\nسيتم تجهيز طلبك.`
           );
+          await send(
+  env.TELEGRAM_TOKEN,
+  "1167796022",
+  `🔔 دفعة جديدة مؤكدة!\n\n🐧 المنتج: ${order.product_name}\n💰 المبلغ: ${order.amount} USDT\n🧾 TXID:\n${text}`
+);
           return new Response("OK");
 
         } catch (error) {
