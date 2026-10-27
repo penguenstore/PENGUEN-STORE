@@ -252,20 +252,31 @@ export default {
             return new Response("OK");
           }
 
-          await env.DB.prepare(`
-            UPDATE orders
-            SET txid = ?, status = 'paid', paid_at = CURRENT_TIMESTAMP
-            WHERE id = ? AND status = 'awaiting_txid' AND txid IS NULL
-          `).bind(text.toLowerCase(), order.id).run();
+          const result = await env.DB.prepare(`
+  UPDATE orders
+  SET txid = ?, status = 'paid', paid_at = CURRENT_TIMESTAMP
+  WHERE id = ?
+    AND chat_id = ?
+    AND status = 'awaiting_txid'
+    AND txid IS NULL
+    AND NOT EXISTS (
+      SELECT 1 FROM orders WHERE txid = ?
+    )
+`).bind(
+  text.toLowerCase(),
+  order.id,
+  String(chatId),
+  text.toLowerCase()
+).run();
 
-          const updated = await env.DB.prepare(
-            "SELECT status FROM orders WHERE id = ?"
-          ).bind(order.id).first();
-
-          if (updated?.status !== "paid") {
-            await send(env.TELEGRAM_TOKEN, chatId, "تعذر تسجيل الدفع. تواصل مع الدعم.");
-            return new Response("OK");
-          }
+if (result.meta.changes !== 1) {
+  await send(
+    env.TELEGRAM_TOKEN,
+    chatId,
+    "⚠️ هذه المعاملة مستخدمة مسبقاً أو تم تسجيل الطلب. لن يتم تأكيد الدفع مرة ثانية."
+  );
+  return new Response("OK");
+}
 
           await send(
             env.TELEGRAM_TOKEN, chatId,
