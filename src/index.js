@@ -35,7 +35,7 @@ async function edit(token, chatId, messageId, text, keyboard) {
   });
 }
 
-function productKeyboard() {
+
   return {
     inline_keyboard: products.map(p => [{
       text: p.name,
