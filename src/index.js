@@ -149,7 +149,55 @@ else if (data === "admin_orders") {
     );
   }
 }
-      else if (data === "admin_add_product") {
+  else if (data === "admin_prices") {
+  if (String(cb.from.id) !== "1167796022") {
+    return new Response("OK");
+  }
+
+  await edit(
+    env.TELEGRAM_TOKEN,
+    chatId,
+    messageId,
+    "💰 اختر المنتج الذي تريد تعديل سعره:",
+    {
+      inline_keyboard: [
+        ...products.map(p => [{
+          text: `${p.name} — ${p.price} USDT`,
+          callback_data: `editprice_${p.id}`
+        }]),
+        [{ text: "🔙 رجوع", callback_data: "admin_back" }]
+      ]
+    }
+  );
+  }
+      else if (data.startsWith("editprice_")) {
+  if (String(cb.from.id) !== "1167796022") {
+    return new Response("OK");
+  }
+
+  const id = Number(data.slice(10));
+  const p = products.find(x => x.id === id);
+
+  if (!p) return new Response("OK");
+
+  await env.DB.prepare(`
+    INSERT INTO admin_sessions (chat_id, action, product_id)
+    VALUES (?, 'update_product_price', ?)
+    ON CONFLICT(chat_id) DO UPDATE SET
+      action = 'update_product_price',
+      product_id = excluded.product_id,
+      created_at = CURRENT_TIMESTAMP
+  `).bind(String(chatId), id).run();
+
+  await edit(
+    env.TELEGRAM_TOKEN,
+    chatId,
+    messageId,
+    `💰 المنتج: ${p.name}\nالسعر الحالي: ${p.price} USDT\n\nأرسل السعر الجديد:`,
+    backKeyboard()
+  );
+      }
+  else if (data === "admin_add_product") {
   if (String(cb.from.id) !== "1167796022") {
     await tg(env.TELEGRAM_TOKEN, "answerCallbackQuery", {
       callback_query_id: cb.id,
@@ -299,6 +347,30 @@ const adminSession = await env.DB.prepare(
 ).bind(String(chatId)).first();
 
 if (String(chatId) === "1167796022" && adminSession) {
+  if (adminSession.action === "update_product_price") {
+  const price = Number(text);
+
+  if (!Number.isFinite(price) || price <= 0 || price > 1000000) {
+    await send(env.TELEGRAM_TOKEN, chatId, "❌ أرسل سعراً صحيحاً.");
+    return new Response("OK");
+  }
+
+  await env.DB.prepare(
+    "UPDATE products SET price = ? WHERE id = ?"
+  ).bind(price, adminSession.product_id).run();
+
+  await env.DB.prepare(
+    "DELETE FROM admin_sessions WHERE chat_id = ?"
+  ).bind(String(chatId)).run();
+
+  await send(
+    env.TELEGRAM_TOKEN,
+    chatId,
+    `✅ تم تعديل السعر بنجاح إلى ${price} USDT`
+  );
+
+  return new Response("OK");
+  }
   if (adminSession.action === "add_product_name") {
     await env.DB.prepare(
       "UPDATE admin_sessions SET product_name = ?, action = 'add_product_price' WHERE chat_id = ?"
