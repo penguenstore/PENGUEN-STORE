@@ -120,7 +120,31 @@ export default {
             productKeyboard()
           );
         }
+else if (data === "admin_orders") {
+  const result = await env.DB.prepare(
+    "SELECT * FROM orders ORDER BY created_at DESC LIMIT 10"
+  ).all();
 
+  const orders = result.results || [];
+
+  if (orders.length === 0) {
+    await edit(
+      env.TELEGRAM_TOKEN, chatId, messageId,
+      "📦 لا توجد طلبات حتى الآن.",
+      backKeyboard()
+    );
+  } else {
+    const list = orders.map(o =>
+      `🐧 ${o.product_name}\n💰 ${o.amount} USDT\n📌 الحالة: ${o.status}\n🧾 الطلب: ${o.id}`
+    ).join("\n\n");
+
+    await edit(
+      env.TELEGRAM_TOKEN, chatId, messageId,
+      `📦 آخر الطلبات:\n\n${list}`,
+      backKeyboard()
+    );
+  }
+}
         else if (data.startsWith("product_")) {
           const id = Number(data.slice(8));
           const p = products.find(x => x.id === id);
