@@ -34,7 +34,13 @@ async function edit(token, chatId, messageId, text, keyboard) {
     reply_markup: keyboard
   });
 }
-
+function backKeyboard() {
+  return {
+    inline_keyboard: [
+      [{ text: "🔙 رجوع", callback_data: "show_products" }]
+    ]
+  };
+}
 async function productKeyboard(env) {
   const products = await getProducts(env);
 
