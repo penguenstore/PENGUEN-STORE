@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111827">
+  <title>PENGUEN STORE</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+    }
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+    }
+    .nav {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo { font-size: 23px; font-weight: bold; }
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .language { background: white; color: #111827; }
+    .hero {
+      background: #111827;
+      color: white;
+      text-align: center;
+      padding: 65px 20px 80px;
+    }
+    .hero h1 { font-size: 36px; margin: 0 0 15px; }
+    .hero p { color: #cbd5e1; line-height: 1.8; }
+    .container {
+      max-width: 1100px;
+      margin: 35px auto;
+      padding: 0 18px;
+    }
+    .section-title { text-align: center; margin-bottom: 25px; }
+    .empty {
+      background: white;
+      padding: 45px 20px;
+      border-radius: 15px;
+      text-align: center;
+      color: #64748b;
+      border: 1px solid #e5e7eb;
+    }
+    .payment {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 25px;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+    }
+    .payment h2 { margin-top: 0; }
+    .usdt {
+      display: inline-block;
+      background: #ecfdf5;
+      color: #047857;
+      padding: 9px 15px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #64748b;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">🐧 PENGUEN STORE</div>
+    <button class="language" onclick="changeLanguage()" id="langButton">
+      English
+    </button>
+  </div>
+</header>
+
+<section class="hero">
+  <h1 id="welcome">مرحباً بك في PENGUEN STORE</h1>
+  <p id="description">
+    وجهتك لشراء المنتجات الرقمية بسهولة وأمان
+  </p>
+</section>
+
+<main class="container">
+  <h2 class="section-title" id="productsTitle">منتجاتنا</h2>
+
+  <div class="empty">
+    <h3 id="emptyTitle">🐧 قريباً</h3>
+    <p id="emptyDescription">
+      نعمل على تجهيز المنتجات الرقمية. ترقبوا الإطلاق!
+    </p>
+  </div>
+
+  <div class="payment">
+    <h2 id="paymentTitle">طرق الدفع</h2>
+    <p id="paymentDescription">
+      الدفع متاح باستخدام عملة USDT عبر شبكة TRC20
+    </p>
+    <span class="usdt">USDT · TRC20</span>
+  </div>
+</main>
+
+<footer>
+  © 2026 PENGUEN STORE
+  <span id="footerText"> — جميع الحقوق محفوظة</span>
+</footer>
+
+<script>
+  let english = false;
+
+  function changeLanguage() {
+    english = !english;
+
+    document.documentElement.lang = english ? "en" : "ar";
+    document.documentElement.dir = english ? "ltr" : "rtl";
+
+    document.getElementById("langButton").textContent =
+      english ? "العربية" : "English";
+
+    document.getElementById("welcome").textContent =
+      english ? "Welcome to PENGUEN STORE" :
+      "مرحباً بك في PENGUEN STORE";
+
+    document.getElementById("description").textContent =
+      english ? "Your destination for digital products" :
+      "وجهتك لشراء المنتجات الرقمية بسهولة وأمان";
+
+    document.getElementById("productsTitle").textContent =
+      english ? "Our Products" : "منتجاتنا";
+
+    document.getElementById("emptyTitle").textContent =
+      english ? "🐧 Coming Soon" : "🐧 قريباً";
+
+    document.getElementById("emptyDescription").textContent =
+      english ? "We are preparing our digital products. Stay tuned!" :
+      "نعمل على تجهيز المنتجات الرقمية. ترقبوا الإطلاق!";
+
+    document.getElementById("paymentTitle").textContent =
+      english ? "Payment Methods" : "طرق الدفع";
+
+    document.getElementById("paymentDescription").textContent =
+      english ? "Pay with USDT on the TRC20 network" :
+      "الدفع متاح باستخدام عملة USDT عبر شبكة TRC20";
+
+    document.getElementById("footerText").textContent =
+      english ? " — All rights reserved" :
+      " — جميع الحقوق محفوظة";
+  }
+</script>
+
+</body>
+</html>
