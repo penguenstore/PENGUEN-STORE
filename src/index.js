@@ -152,7 +152,31 @@ else if (data === "admin_orders") {
     );
   }
 }
-        else if (data.startsWith("product_")) {
+      else if (data === "admin_add_product") {
+  if (String(cb.from.id) !== "1167796022") {
+    await tg(env.TELEGRAM_TOKEN, "answerCallbackQuery", {
+      callback_query_id: cb.id,
+      text: "غير مسموح لك"
+    });
+    return new Response("OK");
+  }
+
+  await env.DB.prepare(`
+    INSERT INTO admin_sessions (chat_id, action)
+    VALUES (?, 'add_product_name')
+    ON CONFLICT(chat_id) DO UPDATE SET
+      action = 'add_product_name',
+      product_id = NULL,
+      created_at = CURRENT_TIMESTAMP
+  `).bind(String(chatId)).run();
+
+  await edit(
+    env.TELEGRAM_TOKEN, chatId, messageId,
+    "➕ أرسل اسم المنتج الجديد:",
+    backKeyboard()
+  );
+}
+else if (data.startsWith("product_")) {
           const id = Number(data.slice(8));
           const p = products.find(x => x.id === id);
 
@@ -273,7 +297,48 @@ if (text === "/admin") {
         );
         return new Response("OK");
       }
+const adminSession = await env.DB.prepare(
+  "SELECT * FROM admin_sessions WHERE chat_id = ?"
+).bind(String(chatId)).first();
 
+if (String(chatId) === "1167796022" && adminSession) {
+  if (adminSession.action === "add_product_name") {
+    await env.DB.prepare(
+      "UPDATE admin_sessions SET product_name = ?, action = 'add_product_price' WHERE chat_id = ?"
+    ).bind(text, String(chatId)).run();
+
+    await send(
+      env.TELEGRAM_TOKEN,
+      chatId,
+      "💰 أرسل سعر المنتج الجديد بالدولار USDT:"
+    );
+    return new Response("OK");
+  }
+
+  if (adminSession.action === "add_product_price") {
+    const price = Number(text);
+
+    if (!Number.isFinite(price) || price <= 0 || price > 1000000) {
+      await send(env.TELEGRAM_TOKEN, chatId, "❌ أرسل سعراً صحيحاً.");
+      return new Response("OK");
+    }
+
+    await env.DB.prepare(
+      "INSERT INTO products (name, price) VALUES (?, ?)"
+    ).bind(adminSession.product_name, price).run();
+
+    await env.DB.prepare(
+      "DELETE FROM admin_sessions WHERE chat_id = ?"
+    ).bind(String(chatId)).run();
+
+    await send(
+      env.TELEGRAM_TOKEN,
+      chatId,
+      `✅ تمت إضافة المنتج بنجاح!\n\n🐧 ${adminSession.product_name}\n💰 ${price} USDT`
+    );
+    return new Response("OK");
+  }
+}
       if (/^[a-fA-F0-9]{64}$/.test(text)) {
         const order = await env.DB.prepare(`
           SELECT * FROM orders
