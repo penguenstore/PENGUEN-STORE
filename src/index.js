@@ -198,7 +198,20 @@ export default {
 
       const chatId = message.chat.id;
       const text = (message.text || "").trim();
+if (text === "/admin") {
+  if (String(chatId) !== "1167796022") {
+    await send(env.TELEGRAM_TOKEN, chatId, "⛔ غير مسموح لك.");
+    return new Response("OK");
+  }
 
+  await send(env.TELEGRAM_TOKEN, chatId, "🐧 لوحة تحكم PENGUEN\n\nاختر العملية:", {
+    inline_keyboard: [
+      [{ text: "📦 الطلبات", callback_data: "admin_orders" }],
+      [{ text: "💰 تعديل الأسعار", callback_data: "admin_prices" }]
+    ]
+  });
+  return new Response("OK");
+}
       if (text === "/start") {
         const welcome =
           "🐧 أهلاً بك في PENGUEN STORE!\n\n" +
