@@ -253,7 +253,7 @@ if (text === "/admin") {
   await send(env.TELEGRAM_TOKEN, chatId, "🐧 لوحة تحكم PENGUEN\n\nاختر العملية:", {
     inline_keyboard: [
       [{ text: "📦 الطلبات", callback_data: "admin_orders" }],
-      [{ text: "💰 تعديل الأسعار", callback_data: "admin_prices" }]
+      [{ text: "💰 تعديل الأسعار", callback_data: "admin_prices" }],
       [{ text: "➕ إضافة منتج", callback_data: "admin_add_product" }]
     ]
   });
