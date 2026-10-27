@@ -62,10 +62,19 @@ export default {
         let reply;
 
         if (text === "/start") {
-          reply =
-            "🐧 أهلاً بك في PENGUEN STORE!\n\n" +
-            "متجرنا يدعم الدفع باستخدام USDT TRC20.\n\n" +
-            "اكتب /wallet لعرض عنوان الدفع.";
+  reply =
+    "🐧 أهلاً بك في PENGUEN STORE!\n\n" +
+    "وجهتك لشراء المحتوى الحصري.\n\n" +
+    "💰 الدفع متاح باستخدام USDT عبر شبكة TRC20.\n" +
+    "📦 التسليم متاح تلقائياً أو يدوياً.\n\n" +
+    "━━━━━━━━━━━━━━\n\n" +
+    "🐧 Welcome to PENGUEN STORE!\n\n" +
+    "Your destination for exclusive content.\n\n" +
+    "💰 Pay with USDT via the TRC20 network.\n" +
+    "📦 Automatic and manual delivery available.\n\n" +
+    "━━━━━━━━━━━━━━\n\n" +
+    "استخدم الأزرار بالأسفل للبدء بالتسوق.\n" +
+    "Use the buttons below to start shopping.";
         } else if (text === "/wallet") {
           reply = env.WALLET_ADDRESS
             ? "💰 عنوان محفظة USDT TRC20:\n\n" +
