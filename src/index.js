@@ -239,6 +239,7 @@ if (text === "/admin") {
     inline_keyboard: [
       [{ text: "📦 الطلبات", callback_data: "admin_orders" }],
       [{ text: "💰 تعديل الأسعار", callback_data: "admin_prices" }]
+      [{ text: "➕ إضافة منتج", callback_data: "admin_add_product" }]
     ]
   });
   return new Response("OK");
