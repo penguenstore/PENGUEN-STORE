@@ -1,5 +1,10 @@
+async function getProducts(env) {
+  const result = await env.DB.prepare(
+    "SELECT id, name, price, currency FROM products WHERE active = 1 ORDER BY id"
+  ).all();
 
-import { products } from "./products.js";
+  return result.results || [];
+}
 
 const WALLET = "TNgd2kFgpTmytrovEoBAZfxZQFxrZUEjuF";
 const USDT_CONTRACT = "TXLAQ63Xg1NAzckPwKHvzw7CSEmLMEqcdj";
@@ -39,12 +44,14 @@ function productKeyboard() {
   };
 }
 
-function backKeyboard() {
+async function productKeyboard(env) {
+  const products = await getProducts(env);
+
   return {
-    inline_keyboard: [[{
-      text: "🔙 رجوع للمنتجات | Back to Products",
-      callback_data: "show_products"
-    }]]
+    inline_keyboard: products.map(p => [{
+      text: p.name,
+      callback_data: `product_${p.id}`
+    }])
   };
 }
 
@@ -112,12 +119,12 @@ export default {
         const chatId = cb.message.chat.id;
         const messageId = cb.message.message_id;
         const data = cb.data;
-
+const products = await getProducts(env);
         if (data === "show_products") {
           await edit(
             env.TELEGRAM_TOKEN, chatId, messageId,
             "🐧 اختر المنتج:",
-            productKeyboard()
+            await productKeyboard(env)
           );
         }
 else if (data === "admin_orders") {
