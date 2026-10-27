@@ -197,7 +197,78 @@ else if (data === "admin_orders") {
     backKeyboard()
   );
       }
-  else if (data === "admin_add_product") {
+  else if (data === "admin_delete_product") {
+  if (String(cb.from.id) !== "1167796022") {
+    return new Response("OK");
+  }
+
+  await edit(
+    env.TELEGRAM_TOKEN,
+    chatId,
+    messageId,
+    "🗑️ اختر المنتج الذي تريد حذفه:",
+    {
+      inline_keyboard: [
+        ...products.map(p => [{
+          text: `🗑️ ${p.name}`,
+          callback_data: `delproduct_${p.id}`
+        }]),
+        [{ text: "🔙 رجوع", callback_data: "admin_back" }]
+      ]
+    }
+  );
+  }
+      else if (data.startsWith("delproduct_")) {
+  if (String(cb.from.id) !== "1167796022") {
+    return new Response("OK");
+  }
+
+  const id = Number(data.slice(11));
+  const p = products.find(x => x.id === id);
+
+  if (!p) return new Response("OK");
+
+  await edit(
+    env.TELEGRAM_TOKEN,
+    chatId,
+    messageId,
+    `⚠️ هل أنت متأكد من حذف المنتج؟\n\n🐧 ${p.name}`,
+    {
+      inline_keyboard: [
+        [{ text: "✅ نعم، احذف المنتج", callback_data: `delconfirm_${id}` }],
+        [{ text: "❌ إلغاء", callback_data: "admin_delete_product" }]
+      ]
+    }
+  );
+      }
+  else if (data.startsWith("delconfirm_")) {
+  if (String(cb.from.id) !== "1167796022") {
+    return new Response("OK");
+  }
+
+  const id = Number(data.slice(11));
+
+  const result = await env.DB.prepare(
+    "UPDATE products SET active = 0 WHERE id = ? AND active = 1"
+  ).bind(id).run();
+
+  if (result.meta.changes === 1) {
+    await edit(
+      env.TELEGRAM_TOKEN,
+      chatId,
+      messageId,
+      "✅ تم حذف المنتج من المتجر بنجاح."
+    );
+  } else {
+    await edit(
+      env.TELEGRAM_TOKEN,
+      chatId,
+      messageId,
+      "⚠️ المنتج غير موجود أو محذوف مسبقاً."
+    );
+  }
+  }
+      else if (data === "admin_add_product") {
   if (String(cb.from.id) !== "1167796022") {
     await tg(env.TELEGRAM_TOKEN, "answerCallbackQuery", {
       callback_query_id: cb.id,
