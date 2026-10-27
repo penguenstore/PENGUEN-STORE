@@ -7,3 +7,7 @@ compatibility_date = "2026-10-27"
 directory = "./public"
 binding = "ASSETS"
 run_worker_first = ["/api/*", "/webhook"]
+[[d1_databases]]
+binding = "DB"
+database_name = "penguen-orders"
+database_id = "b1335038-ae9e-4e3f-b8da-57f49df03ef6"
