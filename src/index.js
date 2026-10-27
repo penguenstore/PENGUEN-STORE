@@ -35,15 +35,6 @@ async function edit(token, chatId, messageId, text, keyboard) {
   });
 }
 
-
-  return {
-    inline_keyboard: products.map(p => [{
-      text: p.name,
-      callback_data: `product_${p.id}`
-    }])
-  };
-}
-
 async function productKeyboard(env) {
   const products = await getProducts(env);
 
